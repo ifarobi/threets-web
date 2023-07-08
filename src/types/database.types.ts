@@ -39,19 +39,19 @@ export interface Database {
           content: string
           created_at: string | null
           id: number
-          user: string | null
+          user: string
         }
         Insert: {
           content: string
           created_at?: string | null
           id?: number
-          user?: string | null
+          user: string
         }
         Update: {
           content?: string
           created_at?: string | null
           id?: number
-          user?: string | null
+          user?: string
         }
         Relationships: [
           {
