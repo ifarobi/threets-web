@@ -76,17 +76,23 @@ export const addThreet = createReduxAsyncThunk(
 
 export const editThreet = createReduxAsyncThunk(
   "threet/editThreet",
-  async function (threet: Threet) {
+  async function (threet: Pick<Threet, "id" | "content">) {
     try {
       const supabase = getSupabaseAnonClient();
 
       const { data, error } = await supabase
         .from("threet_post")
-        .update({ ...threet })
-        .match({ id: threet.id });
+        .update({ content: threet.content })
+        .match({ id: threet.id })
+        .select("*")
+        .single();
 
       if (error) {
         return Promise.reject(error.message);
+      }
+
+      if (!data) {
+        return Promise.reject("No data");
       }
 
       return data;

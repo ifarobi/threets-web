@@ -11,12 +11,21 @@ import { useDispatch, useSelector } from "@/lib/redux/store";
 import { useSupabaseAnon } from "@/lib/supabase";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { FormEvent, useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import ThreetItem from "@/components/ThreetItem";
 
 export default function Home() {
   const supabase = useSupabaseAnon();
   const dispatch = useDispatch();
   const threets = useSelector(selectThreets);
   const user = useSelector(selectUser);
+  const router = useRouter();
+
+  const handleSignout = useCallback(async () => {
+    await supabase.auth.signOut();
+    dispatch(authSlice.actions.clearSession());
+    dispatch(authSlice.actions.clearSession());
+  }, [supabase.auth, dispatch]);
 
   const handleSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
@@ -29,8 +38,6 @@ export default function Home() {
 
         const formData = new FormData(event.target as HTMLFormElement);
         const content = formData.get("content") as string;
-
-        console.log(content);
         await dispatch(
           addThreet({
             content,
@@ -72,7 +79,6 @@ export default function Home() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log(session);
       switch (event) {
         case "INITIAL_SESSION":
         case "SIGNED_IN":
@@ -93,6 +99,37 @@ export default function Home() {
 
   return (
     <main>
+      <div className="bg-blue-500 py-4 flex justify-between w-full">
+        <div className="container mx-auto px-4">
+          <h1 className="text-white text-3xl font-bold">Threet</h1>
+        </div>
+        <div className="container mx-auto px-4">
+          {user ? (
+            <div className="flex justify-end">
+              <p className="text-white mr-4">{user.email}</p>
+              <button
+                onClick={() => {
+                  handleSignout();
+                }}
+                className="px-4 py-2 bg-white hover:bg-gray-100 text-blue-500 font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <div className="flex justify-end">
+              <button
+                onClick={() => {
+                  router.push("/signin");
+                }}
+                className="px-4 py-2 bg-white hover:bg-gray-100 text-blue-500 font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
+              >
+                Login
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-4">Home Page</h1>
         <form className="mb-8" method="POST" onSubmit={handleSubmit}>
@@ -112,10 +149,7 @@ export default function Home() {
         {threets && threets.length > 0 ? (
           <div>
             {threets.map((threet, index) => (
-              <div key={index} className="bg-white rounded-lg p-4 mb-4">
-                <p className="mb-2">{threet.content}</p>
-                <button className="text-blue-500 hover:underline">Reply</button>
-              </div>
+              <ThreetItem key={index} threet={threet} />
             ))}
           </div>
         ) : (

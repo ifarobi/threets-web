@@ -1,6 +1,6 @@
 import { Threet } from "@/types/database.aliases";
 import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { addThreet, fetchThreets } from "./thunks";
+import { addThreet, deleteThreet, editThreet, fetchThreets } from "./thunks";
 
 export interface ThreetSliceState {
   posts: Array<Threet>;
@@ -44,6 +44,16 @@ export const threetSlice = createSlice({
       })
       .addCase(fetchThreets.rejected, (state) => {
         state.loading = false;
+      })
+      .addCase(deleteThreet.fulfilled, (state, action) => {
+        state.posts = state.posts.filter(
+          (threet) => threet.id !== action.payload
+        );
+      })
+      .addCase(editThreet.fulfilled, (state, action) => {
+        state.posts = state.posts.map((threet) =>
+          threet.id === action.payload.id ? action.payload : threet
+        );
       });
   },
 });
