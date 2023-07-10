@@ -1,6 +1,6 @@
 import { Threet } from "@/types/database.aliases";
-import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { addThreet, deleteThreet, editThreet, fetchThreets } from "./thunks";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { deleteThreet, editThreet, fetchThreets } from "./thunks";
 
 export interface ThreetSliceState {
   posts: Array<Threet>;
