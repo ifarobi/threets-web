@@ -1,33 +1,28 @@
-import { Database } from "@/types/database.types";
-import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
-import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
+import Navbar from "@/components/Navbar";
+import { signIn } from "@/lib/redux/slices/auth.slices/thunks";
+import { useDispatch } from "@/lib/redux/store";
+import { FormEvent } from "react";
 
 export default function SigninPage() {
-  async function handleSignIn(formData: FormData) {
-    "use server";
-    try {
-      const email = String(formData.get("email"));
-      const password = String(formData.get("password"));
+  const dispatch = useDispatch();
 
-      const supabase = createServerActionClient<Database>({ cookies });
-      await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+  function handleSignIn(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
 
-      revalidatePath("/");
-    } catch (e) {
-      console.error(e);
-    }
+    const formData = new FormData(e.target as HTMLFormElement);
+    const email = String(formData.get("email"));
+    const password = String(formData.get("password"));
+
+    dispatch(signIn({ email, password }));
   }
 
   return (
     <main>
+      <Navbar />
       <div className="flex flex-col items-center justify-center min-h-screen">
         <div className="max-w-md w-full px-6 py-8 bg-white rounded-lg shadow-md">
           <h2 className="text-2xl font-bold mb-8 text-center">Login</h2>
-          <form action={handleSignIn}>
+          <form method="POST" onSubmit={handleSignIn}>
             <div className="mb-4">
               <label
                 htmlFor="email"

@@ -1,43 +1,30 @@
-import { Database } from "@/types/database.types";
-import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
-import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
+import Navbar from "@/components/Navbar";
+import { signUp } from "@/lib/redux/slices/auth.slices/thunks";
+import { useDispatch } from "@/lib/redux/store";
+import { FormEvent } from "react";
 
 export default function SignupPage() {
-  async function handleSignUp(formData: FormData) {
-    "use server";
+  const dispatch = useDispatch();
+
+  function handleSignUp(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    const formData = new FormData(e.target as HTMLFormElement);
     const email = String(formData.get("email"));
     const password = String(formData.get("password"));
     const firstName = String(formData.get("firstName"));
     const lastName = String(formData.get("lastName"));
 
-    try {
-      const supabase = createServerActionClient<Database>({ cookies });
-
-      await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            firstName,
-            lastName,
-          },
-          emailRedirectTo: "http://localhost:3000/callback",
-        },
-      });
-
-      revalidatePath("/");
-    } catch (e) {
-      console.error(e);
-    }
+    dispatch(signUp({ email, password, firstName, lastName }));
   }
 
   return (
     <main>
+      <Navbar />
       <div className="flex flex-col items-center justify-center min-h-screen">
         <div className="max-w-md w-full px-6 py-8 bg-white rounded-lg shadow-md">
           <h2 className="text-2xl font-bold mb-8 text-center">Signup</h2>
-          <form method="POST" action={handleSignUp}>
+          <form method="POST" onSubmit={handleSignUp}>
             <div className="grid grid-cols-2 gap-4">
               <div className="mb-4">
                 <label
