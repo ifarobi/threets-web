@@ -1,48 +1,14 @@
 import Navbar from "@/components/Navbar";
 import ThreetItem from "@/components/ThreetItem";
 import { selectUser } from "@/lib/redux/slices/auth.slices/selectors";
+import { fetchUser } from "@/lib/redux/slices/auth.slices/thunks";
 import { selectThreets } from "@/lib/redux/slices/threet.slices/selectors";
 import {
   addThreet,
   fetchThreets,
 } from "@/lib/redux/slices/threet.slices/thunks";
 import { useDispatch, useSelector } from "@/lib/redux/store";
-import { Database } from "@/types/database.types";
-import { createPagesServerClient } from "@supabase/auth-helpers-nextjs";
-import { GetServerSideProps } from "next";
 import { FormEvent, useCallback, useEffect } from "react";
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  try {
-    const supabase = createPagesServerClient<Database>(context);
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.getSession();
-
-    if (error || !session) {
-      return {
-        redirect: {
-          destination: "/auth/signin",
-          permanent: false,
-        },
-      };
-    }
-
-    return {
-      props: {},
-    };
-  } catch (e) {
-    console.error(e);
-
-    return {
-      redirect: {
-        destination: "/auth/signin",
-        permanent: false,
-      },
-    };
-  }
-};
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -66,8 +32,6 @@ export default function Home() {
             user: user.id,
           })
         );
-
-        dispatch(fetchThreets());
       } catch (error) {
         console.error(error);
       }
@@ -77,6 +41,8 @@ export default function Home() {
 
   useEffect(() => {
     dispatch(fetchThreets());
+
+    dispatch(fetchUser());
   }, [dispatch]);
 
   return (

@@ -1,15 +1,13 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { Session, User } from "@supabase/auth-helpers-nextjs";
-import { signIn, signOut } from "./thunks";
+import { fetchUser, signIn, signOut, signUp } from "./thunks";
+import { User } from "@/types/api.types";
 
 export interface AuthSliceState {
   user: User | null;
-  session: Omit<Session, "user"> | null;
 }
 
 export const initialState: AuthSliceState = {
   user: null,
-  session: null,
 };
 
 export const authSlice = createSlice({
@@ -19,29 +17,26 @@ export const authSlice = createSlice({
     setUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
     },
-    setSession: (state, action: PayloadAction<Omit<Session, "user">>) => {
-      state.session = action.payload;
-    },
     clearUser: (state) => {
       state.user = null;
-    },
-    clearSession: (state) => {
-      state.session = null;
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(signIn.fulfilled, (state, action) => {
-        state.user = action.payload.user;
-        state.session = action.payload.session;
+        state.user = action.payload;
       })
       .addCase(signIn.rejected, (state) => {
         state.user = null;
-        state.session = null;
+      })
+      .addCase(signUp.fulfilled, (state, action) => {
+        state.user = action.payload;
       })
       .addCase(signOut.fulfilled, (state) => {
         state.user = null;
-        state.session = null;
+      })
+      .addCase(fetchUser.fulfilled, (state, action) => {
+        state.user = action.payload;
       });
   },
 });

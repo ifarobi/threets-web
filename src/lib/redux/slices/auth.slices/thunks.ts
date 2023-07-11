@@ -1,4 +1,4 @@
-import { getSupabaseAnonClient } from "@/lib/supabase";
+import fetcher from "@/lib/axios";
 import { createReduxAsyncThunk } from "../../creteReduxAsyncThunk";
 
 type UserCreds = {
@@ -14,53 +14,59 @@ type UserSignUp = UserCreds & {
 export const signIn = createReduxAsyncThunk(
   "auth/signIn",
   async function ({ email, password }: UserCreds) {
-    const supabase = getSupabaseAnonClient();
-
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data } = await fetcher.post("/api/auth/signin", {
       email,
       password,
     });
 
-    if (error) {
-      return Promise.reject(error.message);
-    }
+    const { token, user } = data;
 
-    return data;
+    localStorage.setItem("token", token);
+
+    return user;
   }
 );
 
 export const signOut = createReduxAsyncThunk("auth/signOut", async function () {
-  const supabase = getSupabaseAnonClient();
+  const { data } = await fetcher.post("/api/auth/signout");
 
-  const { error } = await supabase.auth.signOut();
+  localStorage.removeItem("token");
 
-  if (error) {
-    return Promise.reject(error.message);
-  }
-
-  return null;
+  return data;
 });
 
 export const signUp = createReduxAsyncThunk(
   "auth/signUp",
   async function ({ email, password, firstName, lastName }: UserSignUp) {
-    const supabase = getSupabaseAnonClient();
-
-    const { data, error } = await supabase.auth.signUp({
+    const { data } = await fetcher.post("/api/auth/signup", {
       email,
       password,
-      options: {
-        data: {
-          firstName,
-          lastName,
-        },
-        emailRedirectTo: "http://localhost:3000/auth/verify",
-      },
+      firstName,
+      lastName,
     });
 
-    if (error) {
-      return Promise.reject(error.message);
+    const { token, user } = data;
+
+    localStorage.setItem("token", token);
+
+    return user;
+  }
+);
+
+export const fetchUser = createReduxAsyncThunk(
+  "auth/fetchUser",
+  async function () {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      throw new Error("No token found");
     }
+
+    const { data } = await fetcher.get("/api/auth/me", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     return data;
   }

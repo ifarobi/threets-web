@@ -1,8 +1,7 @@
 import { z } from "zod";
 
 const envVariables = z.object({
-  NEXT_PUBLIC_SUPABASE_URL: z.string(),
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
+  JWT_SECRET: z.string(),
 });
 
 envVariables.parse(process.env);
