@@ -1,15 +1,12 @@
 import { authSlice } from "@/lib/redux/slices/auth.slices/slice";
-import { render } from "@testing-library/react";
-import { ReduxState, ReduxStore } from "@/lib/redux/store";
-import { PreloadedState, configureStore } from "@reduxjs/toolkit";
-import { RenderOptions } from "@testing-library/react";
-import { Provider } from "react-redux";
-import { PropsWithChildren, ReactElement } from "react";
 import { threetSlice } from "@/lib/redux/slices/threet.slices/slice";
-import { createRequest } from "node-mocks-http";
-import { NextApiRequest } from "next";
+import { ReduxState, ReduxStore } from "@/lib/redux/store";
 import { ApiRequest } from "@/types/api.types";
-import { RequestMethod } from "node-mocks-http";
+import { PreloadedState, configureStore } from "@reduxjs/toolkit";
+import { RenderOptions, render } from "@testing-library/react";
+import { RequestMethod, createRequest } from "node-mocks-http";
+import { PropsWithChildren, ReactElement } from "react";
+import { Provider } from "react-redux";
 
 interface ExtendedRenderOptions extends Omit<RenderOptions, "queries"> {
   preloadedState?: PreloadedState<ReduxState>;
