@@ -8,6 +8,7 @@ import {
   fetchThreets,
 } from "@/lib/redux/slices/threet.slices/thunks";
 import { useDispatch, useSelector } from "@/lib/redux/store";
+import { useRouter } from "next/router";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 
 export default function Home() {
@@ -15,6 +16,7 @@ export default function Home() {
   const threets = useSelector(selectThreets);
   const user = useSelector(selectUser);
   const [content, setContent] = useState("");
+  const router = useRouter();
 
   const handleSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
@@ -22,7 +24,7 @@ export default function Home() {
         event.preventDefault();
 
         if (!user) {
-          throw new Error("You must be logged in to post.");
+          return router.push('/auth/signin')
         }
 
         await dispatch(
