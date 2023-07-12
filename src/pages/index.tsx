@@ -8,12 +8,13 @@ import {
   fetchThreets,
 } from "@/lib/redux/slices/threet.slices/thunks";
 import { useDispatch, useSelector } from "@/lib/redux/store";
-import { FormEvent, useCallback, useEffect } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 
 export default function Home() {
   const dispatch = useDispatch();
   const threets = useSelector(selectThreets);
   const user = useSelector(selectUser);
+  const [content, setContent] = useState("");
 
   const handleSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
@@ -24,19 +25,19 @@ export default function Home() {
           throw new Error("You must be logged in to post.");
         }
 
-        const formData = new FormData(event.target as HTMLFormElement);
-        const content = formData.get("content") as string;
         await dispatch(
           addThreet({
             content,
             user: user.id,
           })
         );
+
+        setContent("");
       } catch (error) {
         console.error(error);
       }
     },
-    [dispatch, user]
+    [content, dispatch, user]
   );
 
   useEffect(() => {
@@ -56,6 +57,8 @@ export default function Home() {
             name="content"
             className="w-full px-4 py-2 mb-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             rows={4}
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
           ></textarea>
           <button
             type="submit"
