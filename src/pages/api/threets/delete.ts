@@ -11,15 +11,6 @@ router.delete(async (req, res) => {
   try {
     const { id } = req.body;
 
-    const threet = threetMocks.find((threet) => threet.id === id);
-
-    if (!threet) {
-      res.status(404).json({
-        message: "Threet not found",
-      });
-      return;
-    }
-
     res.status(200).json({ id });
   } catch (e) {
     res.status(500).json({

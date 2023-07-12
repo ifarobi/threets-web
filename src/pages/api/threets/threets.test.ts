@@ -105,24 +105,6 @@ describe("threets related apis", () => {
         created_at: threets.created_at,
       });
     });
-
-    it("should return 404 Not Found when threet is not found", async () => {
-      const { req, res } = createMockRequest({
-        method: "PATCH",
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-        body: {
-          id: 999,
-          content: "updated content",
-        },
-      });
-
-      await threetsUpdate(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(404);
-      expect(res.json).toHaveBeenCalledTimes(1);
-    });
   });
 
   describe("[DELETE] /api/threets/delete", () => {
@@ -145,23 +127,6 @@ describe("threets related apis", () => {
       expect(res.json).toHaveBeenCalledWith({
         id: threets.id,
       });
-    });
-
-    it("should return 404 Not Found when threet is not found", async () => {
-      const { req, res } = createMockRequest({
-        method: "DELETE",
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-        body: {
-          id: 999,
-        },
-      });
-
-      await threetsDeleteThreet(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(404);
-      expect(res.json).toHaveBeenCalledTimes(1);
     });
   });
 

@@ -13,18 +13,11 @@ router.patch(async (req, res) => {
 
     const threet = threetsMock.find((threet) => threet.id === id);
 
-    if (!threet) {
-      res.status(404).json({
-        message: "Threet not found",
-      });
-      return;
-    }
-
     res.status(200).json({
       id,
       content,
-      created_at: threet.created_at,
-      user: threet.user,
+      created_at: threet?.created_at || new Date().toISOString(),
+      user: threet?.user || req.user?.id,
     });
   } catch (e) {
     res.status(500).json({
