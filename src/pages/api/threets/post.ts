@@ -10,11 +10,11 @@ router.post(async (req, res) => {
   try {
     const { content, user } = req.body;
 
-    res.status(200).json({
+    res.status(201).json({
       id: Math.random(),
       content,
       user,
-      createdAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
     });
   } catch (e) {
     res.status(500).json({

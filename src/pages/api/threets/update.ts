@@ -1,6 +1,7 @@
 import authApiMiddleware from "@/middlewares/api/auth.middleware";
 import { ApiError, ApiRequest, ApiResponse } from "@/types/api.types";
 import { createRouter } from "next-connect";
+import threetsMock from "@/mocks/threets";
 
 const router = createRouter<ApiRequest, ApiResponse>();
 
@@ -10,11 +11,20 @@ router.patch(async (req, res) => {
   try {
     const { id, content } = req.body;
 
+    const threet = threetsMock.find((threet) => threet.id === id);
+
+    if (!threet) {
+      res.status(404).json({
+        message: "Threet not found",
+      });
+      return;
+    }
+
     res.status(200).json({
       id,
       content,
-      updatedAt: new Date().toISOString(),
-      user: req.user?.id,
+      created_at: threet.created_at,
+      user: threet.user,
     });
   } catch (e) {
     res.status(500).json({
