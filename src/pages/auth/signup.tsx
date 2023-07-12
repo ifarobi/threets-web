@@ -1,12 +1,14 @@
 import Navbar from "@/components/Navbar";
 import { signUp } from "@/lib/redux/slices/auth.slices/thunks";
 import { useDispatch } from "@/lib/redux/store";
+import { useRouter } from "next/router";
 import { FormEvent } from "react";
 
 export default function SignupPage() {
   const dispatch = useDispatch();
+  const router = useRouter();
 
-  function handleSignUp(e: FormEvent<HTMLFormElement>) {
+  async function handleSignUp(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     const formData = new FormData(e.target as HTMLFormElement);
@@ -15,7 +17,9 @@ export default function SignupPage() {
     const firstName = String(formData.get("firstName"));
     const lastName = String(formData.get("lastName"));
 
-    dispatch(signUp({ email, password, firstName, lastName }));
+    await dispatch(signUp({ email, password, firstName, lastName }));
+
+    router.push("/");
   }
 
   return (
